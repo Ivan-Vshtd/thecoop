@@ -22,8 +22,6 @@ public class UserController extends AbstractController{
     @GetMapping
     public String userList(Model model){
 
-        authControl();
-
         model.addAttribute("users", userService.findAll());
 
         return "userList";
@@ -31,8 +29,6 @@ public class UserController extends AbstractController{
 
     @GetMapping("profile/{userId}")
     public String getProfile(Model model, @PathVariable Long userId){
-
-        authControl();
 
         User user = userService.loadUserById(userId);
 
@@ -51,8 +47,6 @@ public class UserController extends AbstractController{
             @PathVariable Long userId,
             @RequestParam("file") MultipartFile file) throws IOException{
 
-        authControl();
-
         saveAvatar(user, file);
         userService.updateProfile(user, password, email);
         log.info(user.getUsername() + " info has been successfully changed");
@@ -65,8 +59,6 @@ public class UserController extends AbstractController{
             @PathVariable User user,
             @AuthenticationPrincipal User currentUser){
 
-        authControl();
-
         userService.subscribe(currentUser, user);
 
         log.info(user.getUsername() + " -> /user/user-messages/" + user.getId());
@@ -78,8 +70,6 @@ public class UserController extends AbstractController{
             @PathVariable User user,
             @AuthenticationPrincipal User currentUser){
 
-        authControl();
-
         userService.unsubscribe(currentUser, user);
         log.info(user.getUsername() + " -> /user/user-messages/" + user.getId());
 
@@ -90,8 +80,6 @@ public class UserController extends AbstractController{
     public String userList(Model model,
                            @PathVariable String type,
                            @PathVariable User user){
-
-        authControl();
 
         model.addAttribute("userChannel", user);
         model.addAttribute("type", type);

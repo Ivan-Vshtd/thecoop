@@ -28,8 +28,6 @@ public class AdminController extends AbstractController {
     @GetMapping("/user/{user}")
     public String userEditForm(@PathVariable User user, Model model){
 
-        authControl();
-
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.values());
         log.info(user.getUsername() + " -> /user");
@@ -44,8 +42,6 @@ public class AdminController extends AbstractController {
             @RequestParam("userId") User user,
             @RequestParam("file") MultipartFile file) throws IOException {
 
-        authControl();
-
         saveAvatar(user, file);
         userService.saveUser(user, username, form);
 
@@ -56,8 +52,6 @@ public class AdminController extends AbstractController {
     public String deleteMsgFromDb(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Message message) {
-
-        authControl();
 
         deleteFile(message);
 
@@ -74,8 +68,6 @@ public class AdminController extends AbstractController {
     public String deleteBranch(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Branch branch) {
-
-        authControl();
 
         branchRepo.deleteById(branch.getId());
         log.info(currentUser.getUsername() + " -> /branches/" + currentUser.getId() + " and successfully deleted the branch");

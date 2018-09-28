@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.example.thecoop.utilities.AuthenticationController.onlineUsers;
+
 /**
  * @author iveshtard
  * @since 9/13/2018
@@ -33,8 +35,6 @@ public class PrivateController extends AbstractController {
     @GetMapping("/{user}/branches")
     public String privateBranches(
             @PathVariable User user, Model model) {
-
-        authControl();
 
         List<Branch> userPrivateBranches = branchRepo
                 .findBranchByDialogIsTrue()
@@ -59,8 +59,6 @@ public class PrivateController extends AbstractController {
             @PathVariable int number,
             @RequestParam(required = false, defaultValue = "")
                     String filter, Model model) {
-
-        authControl();
 
         User currentUser = (User) userService.loadUserByUsername(user1);
         User user = (User) userService.loadUserByUsername(user2);
@@ -94,7 +92,7 @@ public class PrivateController extends AbstractController {
         model.addAttribute("filter", filter);
         model.addAttribute("total", page.getTotalPages());
         model.addAttribute("current", number);
-        model.addAttribute("onLineUsers", onLineUsers());
+        model.addAttribute("onLineUsers", onlineUsers);
         log.info(currentUser.getUsername() + " -> branch and get private conversation");
 
         return "branch";
@@ -111,8 +109,6 @@ public class PrivateController extends AbstractController {
             BindingResult bindingResult,
             Model model,
             @RequestParam("file") MultipartFile file) throws IOException {
-
-        authControl();
 
         String branchName = String.join("-",
                 Stream.of(user1, user2).sorted().collect(Collectors.toList()));

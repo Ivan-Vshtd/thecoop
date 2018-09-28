@@ -10,7 +10,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.*;
 
-import static com.example.thecoop.utilities.AuthenticationController.authControl;
+import static com.example.thecoop.utilities.AuthenticationController.onlineUsers;
 
 /**
  * @author iveshtard
@@ -68,10 +68,7 @@ public class User implements UserDetails {
     }
 
     public boolean getStatus() {
-        if (authControl.keySet().contains(this)) {
-            return authControl.get(this);
-        }
-        return false;
+        return onlineUsers.contains(this);
     }
 
     @Override

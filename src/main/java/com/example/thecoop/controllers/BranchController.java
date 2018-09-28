@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.thecoop.controllers.ControllerUtils.getErrors;
+import static com.example.thecoop.utilities.AuthenticationController.onlineUsers;
 
 /**
  * @author iveshtard
@@ -36,8 +37,6 @@ public class BranchController extends AbstractController {
     @GetMapping
     public String branches(Model model) {
 
-        authControl();
-
         List<Branch> branches = branchRepo.findBranchByDialogIsFalse();
 
         model.addAttribute("branches", branches);
@@ -52,8 +51,6 @@ public class BranchController extends AbstractController {
             @Valid Branch branch,
             BindingResult bindingResult,
             Model model) {
-
-        authControl();
 
         List<Branch> branches;
 
@@ -87,8 +84,6 @@ public class BranchController extends AbstractController {
             @RequestParam("name") String name,
             @RequestParam("description") String description) {
 
-        authControl();
-
         branchService.editBranch(branch, currentUser, name, description);
         log.info(currentUser.getUsername() + " -> /branches/ and successfully updated name of the branch");
 
@@ -99,8 +94,6 @@ public class BranchController extends AbstractController {
     public String editBranch(
             @PathVariable Branch branch,
             Model model) {
-
-        authControl();
 
         model.addAttribute("branch", branch);
         log.info(" -> branchEdit");
@@ -114,8 +107,6 @@ public class BranchController extends AbstractController {
                          @PathVariable int number,
                          Model model) {
 
-        authControl();
-
         Branch branch = branchRepo.findByNameAndDialogIsFalse(branchName);
 
         List<Message> messages;
@@ -127,7 +118,7 @@ public class BranchController extends AbstractController {
         model.addAttribute("total", page.getTotalPages());
         model.addAttribute("current", number);
         model.addAttribute("branch", branch);
-        model.addAttribute("onLineUsers", onLineUsers());
+        model.addAttribute("onLineUsers", onlineUsers);
         log.info(user.getUsername() + " -> branch");
 
         return "branch";
@@ -144,7 +135,6 @@ public class BranchController extends AbstractController {
             @RequestParam("file") MultipartFile file)
             throws IOException {
 
-        authControl();
         Branch branch = branchService.addMessageToBranch(branchName, user, message);
         saveMessage(user, message, bindingResult, model, file);
 
@@ -154,7 +144,7 @@ public class BranchController extends AbstractController {
 
         model.addAttribute("messages", messages);
         model.addAttribute("branch", branch);
-        model.addAttribute("onLineUsers", onLineUsers());
+        model.addAttribute("onLineUsers", onlineUsers);
         log.info(user.getUsername() + " -> branch and successfully added message to branch");
 
         if (bindingResult.hasErrors()){

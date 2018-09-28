@@ -27,13 +27,4 @@ public class ControllerUtils extends AbstractController{
                 fieldError -> fieldError.getField() + "Error",
                 FieldError::getDefaultMessage);
     }
-
-    public static void startAuthControl() {
-        AuthenticationController auth = new AuthenticationController();
-
-        if(!AuthenticationController.isStarted()) {
-            new Thread(auth).start();
-            AuthenticationController.setStarted(true);
-        }
-    }
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-import static com.example.thecoop.controllers.ControllerUtils.startAuthControl;
+import static com.example.thecoop.utilities.AuthenticationController.onlineUsers;
 
 /**
  * @author iveshtard
@@ -23,11 +23,9 @@ import static com.example.thecoop.controllers.ControllerUtils.startAuthControl;
 @Controller
 public class MainController extends AbstractController {
 
+
     @GetMapping("/")
     public String login(@AuthenticationPrincipal User user, Model model) {
-
-        startAuthControl(); // first logged user will start auth control
-        authControl();
 
         if (user != null) {
             log.info(user.getUsername() + " -> greeting");
@@ -41,7 +39,7 @@ public class MainController extends AbstractController {
     public String main(@AuthenticationPrincipal User user,
                        @RequestParam(required = false, defaultValue = "")
                                String filter, Model model) {
-        authControl();
+
         List<Message> messages;
 
         Page<Message> page = messageRepo.findMessageByDialogIsFalseOrderByDateDesc(request(1));
@@ -58,7 +56,7 @@ public class MainController extends AbstractController {
         model.addAttribute("messages", messages);
         model.addAttribute("filter", filter);
         model.addAttribute("branches", branches);
-        model.addAttribute("onLineUsers", onLineUsers());
+        model.addAttribute("onLineUsers",onlineUsers);
         log.info(user.getUsername() + " -> main");
 
         return "main";

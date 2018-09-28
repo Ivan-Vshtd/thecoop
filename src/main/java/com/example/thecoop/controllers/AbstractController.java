@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,14 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.example.thecoop.controllers.ControllerUtils.getErrors;
-import static com.example.thecoop.utilities.AuthenticationController.authControl;
 
 /**
  * @author iveshtard
@@ -117,22 +111,6 @@ public abstract class AbstractController {
                 e.printStackTrace();
             }
         }
-    }
-
-    void authControl() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) userService.loadUserByUsername(auth.getName());
-
-        authControl.put(user, auth.isAuthenticated());
-        user.setLastVisit(new Date());
-    }
-
-    List<User> onLineUsers() {
-        return authControl
-                .keySet()
-                .stream()
-                .filter(User::getStatus)
-                .collect(Collectors.toList());
     }
 
     PageRequest request(int number){

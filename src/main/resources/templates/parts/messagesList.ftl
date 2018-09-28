@@ -29,7 +29,7 @@
                     </i>
                     <i>
                         <small>
-                            <small>registerd: ${message.authorRegisterDate?string('dd.MM.yy')}</small>
+                            <small>registered: ${message.authorRegisterDate?string('dd.MM.yy')}</small>
                         </small>
                     </i>
                     <small>

@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.thecoop.utilities.AuthenticationController.onlineUsers;
+
 /**
  * @author iveshtard
  * @since 9/6/2018
@@ -33,8 +35,6 @@ public class MessageController extends AbstractController {
     public String delete(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Message message) {
-
-        authControl();
 
         message.setText("message has been deleted by " + currentUser.getUsername());
         message.setDeleted(true);
@@ -54,8 +54,6 @@ public class MessageController extends AbstractController {
             @PathVariable int pageNumber,
             Model model,
             @RequestParam(required = false) Message message) {
-
-        authControl();
 
         List<Message> messages;
         Page<Message> page;
@@ -80,7 +78,7 @@ public class MessageController extends AbstractController {
         model.addAttribute("current", pageNumber);
         model.addAttribute("total", page.getTotalPages());
         model.addAttribute("branches", branches);
-        model.addAttribute("onLineUsers", onLineUsers());
+        model.addAttribute("onLineUsers", onlineUsers);
         log.info(currentUser.getUsername() + " -> user-messages/" + user.getId() + "/" + pageNumber);
 
         return "userMessages";
@@ -98,8 +96,6 @@ public class MessageController extends AbstractController {
             @RequestParam("file") MultipartFile file,
             Model model
     ) throws IOException {
-
-        authControl();
 
         if (message != null && message.getAuthor().equals(currentUser)) {
             if (!Strings.isEmpty(text)) {
@@ -133,8 +129,6 @@ public class MessageController extends AbstractController {
             @PathVariable String userName,
             Model model){
 
-        authControl();
-
         if (messageToAnswer.isDialog() && !messageToAnswer
                                                     .getBranch()
                                                     .getName()
@@ -159,8 +153,6 @@ public class MessageController extends AbstractController {
             BindingResult bindingResult,
             Model model,
             @RequestParam("file") MultipartFile file) throws IOException {
-
-        authControl();
 
         message.setAnswerMessage(messageToAnswer);
         message.setAuthor(currentUser);
