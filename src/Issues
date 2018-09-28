@@ -1,0 +1,20 @@
+1. Add private conversations - done
+2. Add ability to move message to another topic - done
+2. Add link to branch from the messages list - done
+3. Add descriptions of the topics - done
+4. Add messages counter of customers - done
+5. Add different statuses of customers
+6. Add counting of topics messages - done
+7. Add ability to show online status of customers - done
+8. Add valid pagination to filter
+9. Add emoticons to messages
+10. Extend profile's info (added register date, avatar)
+11. Refactor logic to return to the current page after deleting and editing - done
+12. Add list of private dialogs for user - done
+13. Add list of on-line users - done
+14. rewrite pagination to default and add ability to change number of page elements
+15. Add ability to show date and info about updates - done
+
+...
+#. Refactor code (and remove duplicates)
+#+1. Refactor frontend
