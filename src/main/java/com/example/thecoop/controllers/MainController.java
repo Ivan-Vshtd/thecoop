@@ -4,11 +4,15 @@ import com.example.thecoop.domain.Branch;
 import com.example.thecoop.domain.Message;
 import com.example.thecoop.domain.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -23,6 +27,8 @@ import static com.example.thecoop.utilities.AuthenticationController.onlineUsers
 @Controller
 public class MainController extends AbstractController {
 
+    @Autowired
+    SessionRegistry sessionRegistry;
 
     @GetMapping("/")
     public String login(@AuthenticationPrincipal User user, Model model) {
@@ -31,8 +37,14 @@ public class MainController extends AbstractController {
             log.info(user.getUsername() + " -> greeting");
         }
         model.addAttribute("user", user);
-
         return "greeting";
+    }
+
+    @PostMapping("/logout")
+    public String logout(@AuthenticationPrincipal User user){
+        List<SessionInformation> userSessions = sessionRegistry.getAllSessions(user, false);
+        userSessions.forEach(SessionInformation::expireNow);
+        return "logout";
     }
 
     @GetMapping("/main")

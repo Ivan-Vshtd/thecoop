@@ -60,13 +60,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .rememberMe()
                 .and()
-                    .logout()
+                    .logout().logoutUrl("logout")
                     .permitAll()
                 .and()
-                .sessionManagement()
-                .sessionAuthenticationStrategy(strategy())
-                .maximumSessions(2)
-                .sessionRegistry(sessionRegistry());
+                    .sessionManagement()
+                    .sessionAuthenticationStrategy(strategy())
+                    .maximumSessions(1)
+                    .maxSessionsPreventsLogin(false)
+                    .sessionRegistry(sessionRegistry());
     }
 
     @Override
