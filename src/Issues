@@ -15,6 +15,8 @@
 14. rewrite pagination to default and add ability to change number of page elements
 15. Add ability to show date and info about updates - done
 16. rewrite authentication control using Spring scheduling - done
+17. Add resource loader to get ability use relative paths - done
+18. Change method of setting last visit date to use last date of user sessions - done
 
 ...
 #. Refactor code (and remove duplicates)

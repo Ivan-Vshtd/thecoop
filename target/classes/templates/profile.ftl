@@ -19,7 +19,7 @@
             </i><br/>
             <i>
                 <small>
-                <#if user.status>
+                <#if user.online>
                     <i style="color: green">online</i>
                 <#elseIf user.lastVisit??>Last visit: ${user.lastVisit?string('dd.MM.yyyy HH:mm:ss')}
                     <#else><i style="color: red">offline</i>

@@ -27,7 +27,7 @@
         </td>
         <td><i>
             <small>
-            <#if user.status><i style="color: green">online</i>
+            <#if user.online><i style="color: green">online</i>
             <#elseif user.lastVisit??>Last visit: ${user.lastVisit?string('dd.MM.yyyy HH:mm:ss')}
                 <#else><i style="color: red">offline</i>
             </#if></small>

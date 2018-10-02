@@ -67,7 +67,7 @@ public class User implements UserDetails {
         return id;
     }
 
-    public boolean getStatus() {
+    public boolean isOnline() {
         return onlineUsers.contains(this);
     }
 

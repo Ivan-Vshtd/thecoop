@@ -9,6 +9,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import static com.example.thecoop.controllers.ControllerUtils.parent;
+
 /**
  * @author iveshtard
  * @since 7/31/2018
@@ -37,12 +39,24 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        log.debug("add locations to resource handler");
+        log.info("add locations to resource handler");
         registry.addResourceHandler("/img/**")
-                .addResourceLocations("file:///" + uploadPath + "/");
+                .addResourceLocations("file:///" +
+                                parent(parent(parent(this
+                                .getClass()
+                                .getClassLoader()
+                                .getResource("")
+                                .getPath()))) +'/' + uploadPath + '/');
+
+        registry.addResourceHandler("/avatar/**")
+                .addResourceLocations("file:///" +
+                                parent(parent(parent(this
+                                .getClass()
+                                .getClassLoader()
+                                .getResource("")
+                                .getPath()))) +'/' + uploadAvatarPath + '/');
+
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/avatar/**")
-                .addResourceLocations("file:///" + uploadAvatarPath + "/");
     }
 }

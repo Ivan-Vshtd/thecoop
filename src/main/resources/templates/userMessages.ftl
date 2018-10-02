@@ -9,7 +9,7 @@
     </div>
     <i style="line-height: 12px">
         <small><small>
-                <#if userChannel.status>
+                <#if userChannel.online>
                     <i style="color: green">online</i>
                 <#else>Last visit:<br/> ${userChannel.lastVisit?string('dd.MM.yyyy HH:mm:ss')}
                 </#if>

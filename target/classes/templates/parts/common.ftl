@@ -30,9 +30,9 @@
 
 <div class="footer">
 <blockquote class="blockquote text-center">
-    <footer
-            class="blockquote-footer">The Coop - simple forum. Author @iveshtard. Since 2018 <img src="/static/images/logopng.png" width="90" height="60"/>
-    </footer>
+    <div style="color: dimgray">
+        <i>The Coop - simple forum. Author @iveshtard. Since 2018 <img src="/static/images/logopng.png" width="90" height="60"/></i>
+        </div>
 </blockquote>
 </div>
 </body>

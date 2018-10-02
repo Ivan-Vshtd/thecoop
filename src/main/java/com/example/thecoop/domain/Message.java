@@ -82,7 +82,7 @@ public class Message {
     }
 
     public boolean getAuthorStatus(){
-       return author.getStatus();
+       return author.isOnline();
     }
 
     public String getAnswer() {

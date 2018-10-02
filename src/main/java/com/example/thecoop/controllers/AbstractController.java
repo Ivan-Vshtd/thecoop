@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.example.thecoop.controllers.ControllerUtils.getErrors;
+import static com.example.thecoop.controllers.ControllerUtils.parent;
 
 /**
  * @author iveshtard
@@ -32,6 +33,9 @@ import static com.example.thecoop.controllers.ControllerUtils.getErrors;
 @Slf4j
 public abstract class AbstractController {
     static int MESSAGES_SIZE = 5;
+
+    @Value("${upload.path}")
+    String uploadPath;
 
     @Value("${upload.avatar.path}")
     private String uploadAvatarPath;
@@ -45,8 +49,7 @@ public abstract class AbstractController {
     @Autowired
     UserService userService;
 
-    @Value("${upload.path}")
-    String uploadPath;
+
 
     void saveMessage(
             @AuthenticationPrincipal User user,
@@ -74,7 +77,7 @@ public abstract class AbstractController {
             @RequestParam("file") MultipartFile file)
             throws IOException {
 
-        message.setFilename(saveFile(file, uploadPath));
+        message.setFilename(saveFile(file, path(uploadPath)));
     }
 
     void saveAvatar(
@@ -82,7 +85,7 @@ public abstract class AbstractController {
             @RequestParam("avatar") MultipartFile file)
             throws IOException {
 
-        user.setAvatarFilename(saveFile(file, uploadAvatarPath));
+        user.setAvatarFilename(saveFile(file, path(uploadAvatarPath)));
     }
 
     private String saveFile(MultipartFile file, String path) throws IOException {
@@ -97,20 +100,28 @@ public abstract class AbstractController {
             resultFilename = uuidFile + "." + file.getOriginalFilename();
             file.transferTo(new File(path + "\\" + resultFilename));
             log.info(resultFilename + " successfully saved");
-
         }
+
         return resultFilename;
     }
 
     void deleteFile(@PathVariable Message message) {
         if (message.getFilename() != null) {
             try {
-                new File(uploadPath + message.getFilename()).delete();
+                new File(path(uploadPath) + message.getFilename()).delete();
             } catch (Exception e) {
                 log.error("Can not delete the " + message.getFilename());
                 e.printStackTrace();
             }
         }
+    }
+
+    private String path (String destination){
+        return parent(parent(parent(this
+                .getClass()
+                .getClassLoader()
+                .getResource("")
+                .getPath()))) +'/' + destination + '/';
     }
 
     PageRequest request(int number){

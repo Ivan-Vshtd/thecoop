@@ -1,10 +1,10 @@
 package com.example.thecoop.controllers;
 
-import com.example.thecoop.utilities.AuthenticationController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.nio.file.FileSystems;
 import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -26,5 +26,10 @@ public class ControllerUtils extends AbstractController{
         return Collectors.toMap(
                 fieldError -> fieldError.getField() + "Error",
                 FieldError::getDefaultMessage);
+    }
+
+    public static String parent(String path){
+        int index = path.lastIndexOf("/");
+        return path.substring(0, index);
     }
 }

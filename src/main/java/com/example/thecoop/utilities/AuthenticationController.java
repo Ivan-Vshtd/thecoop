@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author iveshtard
@@ -36,20 +37,38 @@ public class AuthenticationController{
     @Autowired
     SessionRegistry sessionRegistry;
 
-    @Scheduled(initialDelay = 10, fixedDelay = 1000)
+    @Scheduled(fixedDelay = 1000)
     public void fillOnlineUserList(){
         onlineUsers = new HashSet<>();
 
-        sessionRegistry.getAllPrincipals().stream().filter((Object principal) -> !this.sessionRegistry
-                .getAllSessions(principal, false).isEmpty()).forEach(onlnUsr -> onlineUsers
+        sessionRegistry
+                .getAllPrincipals()
+                .stream()
+                .filter((Object principal) -> !this.sessionRegistry
+                        .getAllSessions(principal, false)
+                        .isEmpty())
+                .forEach(onlnUsr -> onlineUsers
                 .add((User)onlnUsr));
-
     }
 
     @Scheduled(initialDelay = 1000, fixedDelay = 5 * 60 * 1000)
     public void authControl() {
-        onlineUsers.forEach(user -> user.setLastVisit(new Date()));
-        onlineUsers.forEach(user -> userRepo.save(user));
+        
+        Map<User, Date> visitors = new HashMap<>();
+
+        sessionRegistry
+                .getAllPrincipals()
+                .forEach(principal -> visitors.put((User)principal,
+                        sessionRegistry
+                                .getAllSessions(principal, true)
+                                .stream()
+                                .map(SessionInformation::getLastRequest)
+                                .max(Date::compareTo)
+                                .get()));
+
+        visitors.keySet().forEach(user -> user.setLastVisit(visitors.get(user)));
+        visitors.keySet().forEach(user -> userRepo.save(user));
+
         log.info("authentication controller successfully checked users");
     }
 }
