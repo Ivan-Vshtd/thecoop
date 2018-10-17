@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
+
+import static com.example.thecoop.controllers.ControllerUtils.getInfo;
 
 /**
  * @author iveshtard
@@ -20,9 +23,29 @@ import java.io.IOException;
 public class UserController extends AbstractController{
 
     @GetMapping
-    public String userList(Model model){
+    public String userList(
+            @AuthenticationPrincipal User user,
+            Model model){
 
         model.addAttribute("users", userService.findAll());
+        model.addAttribute("user", user);
+        log.info(user.getUsername() + " -> /user");
+
+        return "userList";
+    }
+
+    @GetMapping("online")
+    public String onlineUsers(
+            @AuthenticationPrincipal User user,
+            Model model){
+
+        model.addAttribute("user", user);
+        model.addAttribute("users", userService.findAll()
+                                                                   .stream()
+                                                                   .filter(User::isOnline)
+                                                                   .collect(Collectors.toSet()));
+        model.addAttribute("isOnline", "online");
+        log.info(user.getUsername() + " -> /user/online");
 
         return "userList";
     }
@@ -34,6 +57,7 @@ public class UserController extends AbstractController{
 
         model.addAttribute("user", user);
         model.addAttribute("email", user.getEmail());
+        model.addAttribute("info", user.getInfo());
         log.info(user.getUsername() + " -> user/profile");
 
         return "profile";
@@ -44,11 +68,15 @@ public class UserController extends AbstractController{
             @AuthenticationPrincipal User user,
             @RequestParam String password,
             @RequestParam String email,
+            @RequestParam String location,
+            @RequestParam String year,
+            @RequestParam String month,
+            @RequestParam String day,
             @PathVariable Long userId,
             @RequestParam("file") MultipartFile file) throws IOException{
 
         saveAvatar(user, file);
-        userService.updateProfile(user, password, email);
+        userService.updateProfile(user, password, email, getInfo(location, year, month, day));
         log.info(user.getUsername() + " info has been successfully changed");
 
         return "redirect:/user/profile/" + userId;
@@ -60,8 +88,8 @@ public class UserController extends AbstractController{
             @AuthenticationPrincipal User currentUser){
 
         userService.subscribe(currentUser, user);
-
         log.info(user.getUsername() + " -> /user/user-messages/" + user.getId());
+
         return "redirect:/user-messages/" + user.getId() + "/1";
     }
 
@@ -78,6 +106,7 @@ public class UserController extends AbstractController{
 
     @GetMapping("{type}/{user}/list")
     public String userList(Model model,
+                           @AuthenticationPrincipal User currentUser,
                            @PathVariable String type,
                            @PathVariable User user){
 
@@ -88,6 +117,7 @@ public class UserController extends AbstractController{
         } else {
             model.addAttribute("users", user.getSubscribers());
         }
+        model.addAttribute("user", currentUser);
         log.info(user.getUsername() + " -> /user/subscription");
 
         return "subscription";

@@ -1,8 +1,8 @@
 <#if onLineUsers??>
 
-    <div class="online" style="max-width: 18rem; margin-left: 60px; margin-top: 20px">
+    <div class="online" style="max-width: 18rem; margin-bottom: 20px">
         <small><i>
-            Online users:
+            <a href="/user/online" style="color: green">Online users:</a>
                 <#list onLineUsers as user>
                     <a href="/user-messages/${user.id}/1" <#if user.admin>style="color: blueviolet"</#if>>${user.username}</a>,
                 </#list>

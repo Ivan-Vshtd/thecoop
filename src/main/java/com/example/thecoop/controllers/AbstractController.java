@@ -3,7 +3,7 @@ package com.example.thecoop.controllers;
 import com.example.thecoop.domain.Message;
 import com.example.thecoop.domain.User;
 import com.example.thecoop.repos.BranchRepo;
-import com.example.thecoop.repos.MessageRepo;
+import com.example.thecoop.service.MessageService;
 import com.example.thecoop.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +13,20 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.example.thecoop.controllers.ControllerUtils.getErrors;
 import static com.example.thecoop.controllers.ControllerUtils.parent;
@@ -41,14 +47,13 @@ public abstract class AbstractController {
     private String uploadAvatarPath;
 
     @Autowired
-    MessageRepo messageRepo;
+    MessageService messageService;
 
     @Autowired
     BranchRepo branchRepo;
 
     @Autowired
     UserService userService;
-
 
 
     void saveMessage(
@@ -67,7 +72,7 @@ public abstract class AbstractController {
             saveMessageFile(message, file);
 
             model.addAttribute("message", null);
-            messageRepo.save(message);
+            messageService.save(message);
             log.info(user.getUsername() + " -> successfully added the message");
         }
     }
@@ -84,8 +89,8 @@ public abstract class AbstractController {
             @Valid User user,
             @RequestParam("avatar") MultipartFile file)
             throws IOException {
-
         user.setAvatarFilename(saveFile(file, path(uploadAvatarPath)));
+        userService.userSave(user);
     }
 
     private String saveFile(MultipartFile file, String path) throws IOException {
@@ -101,7 +106,6 @@ public abstract class AbstractController {
             file.transferTo(new File(path + "\\" + resultFilename));
             log.info(resultFilename + " successfully saved");
         }
-
         return resultFilename;
     }
 
@@ -116,15 +120,50 @@ public abstract class AbstractController {
         }
     }
 
-    private String path (String destination){
+    private String path(String destination) {
         return parent(parent(parent(this
                 .getClass()
                 .getClassLoader()
                 .getResource("")
-                .getPath()))) +'/' + destination + '/';
+                .getPath()))) + '/' + destination + '/';
     }
 
-    PageRequest request(int number){
+    PageRequest request(int number) {
         return PageRequest.of(number - 1, MESSAGES_SIZE);
+    }
+
+    UriComponents getUriComponents(
+            RedirectAttributes redirectAttributes,
+            @RequestHeader(required = false) String referer) {
+
+        UriComponents components = UriComponentsBuilder.fromHttpUrl(referer).build();
+
+        components
+                .getQueryParams()
+                .entrySet()
+                .forEach(pair -> redirectAttributes.addAttribute(pair.getKey(), pair.getValue()));
+        return components;
+    }
+
+    void notifyUser(Model model, User currentUser) {
+
+        List<Message> privateMessages = messageService
+                .findAll(currentUser)
+                .stream()
+                .filter(message -> message.getId() != 1)
+                .filter(message -> !message.isMeRead())
+                .filter(Message::isDialog)
+                .filter(message -> message.getBranch().getName().contains(currentUser.getUsername()))
+                .filter(message -> !currentUser.equals(message.getAuthor()))
+                .collect(Collectors.toList());
+
+        if (privateMessages.size() > 0) {
+            String notification = "You have %d new private message(s) from: " +
+                    String.join(", ", privateMessages
+                            .stream()
+                            .map(Message::getAuthorName)
+                            .collect(Collectors.toSet()));
+            model.addAttribute("notification", String.format(notification, privateMessages.size()));
+        }
     }
 }

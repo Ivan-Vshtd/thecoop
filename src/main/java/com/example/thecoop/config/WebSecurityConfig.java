@@ -31,13 +31,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     @Bean
     public SessionRegistryImpl sessionRegistry(){
         return new SessionRegistryImpl();
     }
 
     @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
+    public HttpSessionEventPublisher publisher(){
         return new HttpSessionEventPublisher();
     }
 
@@ -45,7 +46,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public ConcurrentSessionControlAuthenticationStrategy strategy(){
         return new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
     }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -61,6 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .rememberMe()
                 .and()
                     .logout().logoutUrl("logout")
+                    .deleteCookies("JSESSIONID")
                     .permitAll()
                 .and()
                     .sessionManagement()

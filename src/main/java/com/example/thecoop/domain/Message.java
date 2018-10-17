@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author iveshtard
@@ -40,6 +42,26 @@ public class Message {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "answer_message_id")
     private Message answerMessage;
+
+    @ManyToMany
+    @JoinTable(
+            name = "message_likes",
+            joinColumns = {@JoinColumn(name = "message_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private Set<User> likes = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "message_notifications",
+            joinColumns = {@JoinColumn(name = "message_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private Set<User> notifies = new HashSet<>();
+
+    @Transient
+    private boolean meLiked;
+
+    @Transient
+    private boolean meRead;
 
     private boolean dialog;
 

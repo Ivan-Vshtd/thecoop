@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.example.thecoop.utilities.AuthenticationController.onlineUsers;
+import static com.example.thecoop.utilities.MessageHelper.markAsViewed;
 
 /**
  * @author iveshtard
@@ -33,20 +34,24 @@ import static com.example.thecoop.utilities.AuthenticationController.onlineUsers
 public class PrivateController extends AbstractController {
 
     @GetMapping("/{user}/branches")
+    @PreAuthorize("authentication.name == #user")
     public String privateBranches(
-            @PathVariable User user, Model model) {
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable String user, Model model) {
 
         List<Branch> userPrivateBranches = branchRepo
                 .findBranchByDialogIsTrue()
                 .stream()
                 .filter(branch -> branch.getName()
-                        .contains(user.getUsername()))
+                        .contains(currentUser.getUsername()))
                 .collect(Collectors.toList()); // to get only user's private branches
 
+        notifyUser(model, currentUser);
+
         model.addAttribute("branches", userPrivateBranches);
-        model.addAttribute("user", user);
-        model.addAttribute("private", "private"); //this is a big crutch, will try to resolve it later
-        log.info(user.getUsername() + " -> (private) branches");
+        model.addAttribute("user", currentUser);
+        model.addAttribute("private", "private");
+        log.info(currentUser.getUsername() + " -> (private) branches");
 
         return "branches";
     }
@@ -54,46 +59,48 @@ public class PrivateController extends AbstractController {
     @GetMapping("{user1}-{user2}/{number}")
     @PreAuthorize("authentication.name == #user1 || authentication.name == #user2")
     public String privateConversation(
+            @AuthenticationPrincipal User currentUser,
             @PathVariable String user1,
             @PathVariable String user2,
             @PathVariable int number,
             @RequestParam(required = false, defaultValue = "")
                     String filter, Model model) {
 
-        User currentUser = (User) userService.loadUserByUsername(user1);
-        User user = (User) userService.loadUserByUsername(user2);
+        User userOne = (User) userService.loadUserByUsername(user1);
+        User userTwo = (User) userService.loadUserByUsername(user2);
 
         String branchName = String.join("-",
-                Stream.of(currentUser.getUsername(), user.getUsername()).sorted().collect(Collectors.toList()));
+                Stream.of(userOne.getUsername(), userTwo.getUsername()).sorted().collect(Collectors.toList()));
         Branch branch = branchRepo.findByName(branchName);
 
         if (branch == null) {
             branch = new Branch();
         }
-
         branch.setName(branchName);
         branch.setDialog(true);
 
-        List<Message> privateMessages = messageRepo.findAllByBranchIdOrderByDateDesc(branch.getId());
+        List<Message> privateMessages = messageService.findAllByBranchIdOrderByDateDesc(branch.getId(), userOne);
 
         branchRepo.save(branch);
         privateMessages.forEach(message -> message.setDialog(true)); // set all messages of this brunch as private
-        messageRepo.saveAll(privateMessages);
+        messageService.saveAll(privateMessages);
 
         List<Message> messages;
         PageRequest request = PageRequest.of(number - 1, MESSAGES_SIZE);
-        Page<Message> page = messageRepo.findAllByBranchIdOrderByDateDesc(branch.getId(), request);
+        Page<Message> page = messageService.findAllByBranchIdOrderByDateDesc(branch.getId(), request, userOne);
         messages = page.getContent();
 
+        notifyUser(model, currentUser);
+        markAsViewed(messages, currentUser);
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("user", user);
+        model.addAttribute("user", userTwo);
         model.addAttribute("branch", branch);
         model.addAttribute("messages", messages);
         model.addAttribute("filter", filter);
         model.addAttribute("total", page.getTotalPages());
         model.addAttribute("current", number);
         model.addAttribute("onLineUsers", onlineUsers);
-        log.info(currentUser.getUsername() + " -> branch and get private conversation");
+        log.info(userOne.getUsername() + " -> branch and get private conversation");
 
         return "branch";
     }
@@ -129,7 +136,7 @@ public class PrivateController extends AbstractController {
 
         List<Message> messages;
         PageRequest request = PageRequest.of(number - 1, MESSAGES_SIZE);
-        Page<Message> page = messageRepo.findAllByBranchIdOrderByDateDesc(branch.getId(), request);
+        Page<Message> page = messageService.findAllByBranchIdOrderByDateDesc(branch.getId(), request, user);
         messages = page.getContent();
 
         model.addAttribute("messages", messages);

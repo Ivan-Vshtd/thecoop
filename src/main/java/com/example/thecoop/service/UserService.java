@@ -2,6 +2,7 @@ package com.example.thecoop.service;
 
 import com.example.thecoop.domain.Role;
 import com.example.thecoop.domain.User;
+import com.example.thecoop.domain.UsersInfo;
 import com.example.thecoop.repos.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -54,7 +55,6 @@ public class UserService implements UserDetailsService {
             user.setRoles(Collections.singleton(Role.USER));
             user.setActivationCode(UUID.randomUUID().toString());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-
             userRepo.save(user);
             log.info(user.getUsername() + " has been successfully added to db");
 
@@ -110,12 +110,26 @@ public class UserService implements UserDetailsService {
                         .getRoles()
                         .add(Role.valueOf(key)));
 
+        user.setActive(form.keySet().contains("active"));
+
         userRepo.save(user);
         log.debug(user.getUsername() + " has been successfully saved to db");
     }
 
-    public void updateProfile(User user, String password, String email) {
+    public void updateProfile(User user, String password, String email, UsersInfo info) {
         String userEmail = user.getEmail();
+
+        if (user.getInfo() == null){
+            info.setUser(user);
+            user.setInfo(info);
+        } else {
+            if (!Strings.isEmpty(info.getLocation())) {
+            user.getInfo().setLocation(info.getLocation());
+        }
+        if (info.getBirthday() != null) {
+            user.getInfo().setBirthday(info.getBirthday());
+        }
+        }
 
         boolean isEmailChanged = (email != null && !email.equals(userEmail)) ||
                 (userEmail != null && !userEmail.equals(email));
@@ -129,11 +143,13 @@ public class UserService implements UserDetailsService {
         if (!Strings.isEmpty(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
+
         userRepo.save(user);
+
         if (isEmailChanged) {
             sendMessage(user);
         }
-        log.debug(user.getUsername() + " has been successfully updated in db");
+        log.info(user.getUsername() + " has been successfully updated in db");
     }
 
     public void subscribe(User currentUser, User user) {
@@ -150,5 +166,9 @@ public class UserService implements UserDetailsService {
 
     public User loadUserById(Long id){
         return userRepo.findById(id).get();
+    }
+
+    public void userSave(User user) {
+        userRepo.save(user);
     }
 }

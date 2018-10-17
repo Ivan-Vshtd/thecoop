@@ -8,8 +8,8 @@
 7. Add ability to show online status of customers - done
 8. Add valid pagination to filter
 9. Add emoticons to messages
-10. Extend profile's info (added register date, avatar)
-11. Refactor logic to return to the current page after deleting and editing - done
+10. Extend profile's info (added register date, avatar, birthday, location) - done
+11. Refactor logic to return to the current page after deleting and editing (improved) - done
 12. Add list of private dialogs for user - done
 13. Add list of on-line users - done
 14. rewrite pagination to default and add ability to change number of page elements
@@ -17,6 +17,10 @@
 16. rewrite authentication control using Spring scheduling - done
 17. Add resource loader to get ability use relative paths - done
 18. Change method of setting last visit date to use last date of user sessions - done
+19. Add icons - done
+20. Add messages likes - done
+21. Add ability to ban of a customer - done
+22. Add simple notification about new private messages - done
 
 ...
 #. Refactor code (and remove duplicates)

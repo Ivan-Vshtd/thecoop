@@ -43,6 +43,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Message> messages;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UsersInfo info;
+
     @ManyToMany
     @JoinTable(
             name = "user_subscriptions",
@@ -67,6 +70,10 @@ public class User implements UserDetails {
         return id;
     }
 
+    public UsersInfo getInfo(){
+        return info;
+    }
+
     public boolean isOnline() {
         return onlineUsers.contains(this);
     }
@@ -77,6 +84,18 @@ public class User implements UserDetails {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(id, user.id);
+    }
+
+    public int getYear(){
+        return info.getBirthday().getYear();
+    }
+
+    public int getMonth(){
+        return info.getBirthday().getMonth();
+    }
+
+    public int getDay(){
+        return info.getBirthday().getDay();
     }
 
     @Override
@@ -113,4 +132,5 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
     }
+
 }

@@ -35,6 +35,7 @@ public class MainController extends AbstractController {
 
         if (user != null) {
             log.info(user.getUsername() + " -> greeting");
+            notifyUser(model, user);
         }
         model.addAttribute("user", user);
         return "greeting";
@@ -54,15 +55,16 @@ public class MainController extends AbstractController {
 
         List<Message> messages;
 
-        Page<Message> page = messageRepo.findMessageByDialogIsFalseOrderByDateDesc(request(1));
+        Page<Message> page = messageService.findMessageByDialogIsFalseOrderByDateDesc(request(1), user);
 
         if (filter != null && !filter.isEmpty()) {
-            messages = messageRepo.findByTagAndDialogIsFalseOrderByDateDesc(filter);
+            messages = messageService.findByTagAndDialogIsFalseOrderByDateDesc(filter, user);
         }
         else {
             messages = page.getContent();
         }
         List<Branch> branches = branchRepo.findBranchByDialogIsFalse();
+        notifyUser(model, user);
 
         model.addAttribute("user", user);
         model.addAttribute("messages", messages);

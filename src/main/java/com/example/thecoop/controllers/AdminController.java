@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,17 +53,21 @@ public class AdminController extends AbstractController {
     @RequestMapping("message-delete={message}")
     public String deleteMsgFromDb(
             @AuthenticationPrincipal User currentUser,
-            @PathVariable Message message) {
+            @PathVariable Message message,
+            RedirectAttributes redirectAttributes,
+            @RequestHeader(required = false) String referer) {
 
         deleteFile(message);
 
-        List<Message> relatedMessages = messageRepo.findAllByAnswerMessage(message); // find all messages which were answer to this one
-        relatedMessages.forEach(relMessage -> relMessage.setAnswerMessage(messageRepo.getOne(1L))); // set answer message with id 1 ('deleted')
-        messageRepo.deleteById(message.getId());
+        List<Message> relatedMessages = messageService.findAllByAnswerMessage(message); // find all messages which were answer to this one
+        relatedMessages.forEach(relMessage -> relMessage.setAnswerMessage(messageService.getOne(1L))); // set answer message with id 1 ('deleted')
+        messageService.deleteById(message.getId());
         log.info(currentUser.getUsername() + " -> /user-messages/" + currentUser.getId()
                 + " and successfully deleted the message from db");
 
-        return "redirect:/main";
+        UriComponents components = getUriComponents(redirectAttributes, referer);
+
+        return "redirect:" + components.getPath();
     }
 
     @RequestMapping("branch-delete={branch}")

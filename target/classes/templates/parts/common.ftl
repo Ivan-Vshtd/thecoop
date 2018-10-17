@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/static/style.css" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous" />
     <script src='https://www.google.com/recaptcha/api.js'></script>
@@ -15,9 +15,14 @@
 <body>
     <#include "navbar.ftl">
 
-<div style="margin-top: 70px">
-    <#include "onLineUsers.ftl"/>
-    <div class="container mt-4 ml-5">
+<div style="margin-top: 70px;margin-bottom: 70px">
+    <div class="container mt-4 ml-5" style="max-width: 95%">
+        <#if notification??>
+    <div class="alert alert-success" role="alert">
+        ${notification}
+    </div>
+    </#if>
+        <#include "onLineUsers.ftl"/>
 <#nested>
     </div>
 </div>

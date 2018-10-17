@@ -13,11 +13,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.thecoop.utilities.AuthenticationController.onlineUsers;
 
@@ -31,10 +34,12 @@ import static com.example.thecoop.utilities.AuthenticationController.onlineUsers
 public class MessageController extends AbstractController {
 
 
-    @RequestMapping("message-del={message}")
+    @RequestMapping("message-erase={message}")
     public String delete(
             @AuthenticationPrincipal User currentUser,
-            @PathVariable Message message) {
+            @PathVariable Message message,
+            RedirectAttributes redirectAttributes,
+            @RequestHeader(required = false) String referer) {
 
         message.setText("message has been deleted by " + currentUser.getUsername());
         message.setDeleted(true);
@@ -44,7 +49,9 @@ public class MessageController extends AbstractController {
         log.info(currentUser.getUsername() +
                 " -> /user-messages/" + currentUser.getId() + " and successfully deleted the message");
 
-        return "redirect:/main";
+        UriComponents components = getUriComponents(redirectAttributes, referer);
+
+        return "redirect:" + components.getPath();
     }
 
     @GetMapping("/user-messages/{user}/{pageNumber}")
@@ -59,13 +66,14 @@ public class MessageController extends AbstractController {
         Page<Message> page;
 
         if (currentUser.equals(user) || currentUser.isAdmin()) {
-            page = messageRepo.findMessageByAuthorOrderByDateDesc(user, request(pageNumber));
+            page = messageService.findMessageByAuthorOrderByDateDesc(user, request(pageNumber), currentUser);
             messages = page.getContent();
         } else {
-            page = messageRepo.findMessageByDialogIsFalseAndAuthorOrderByDateDesc(user, request(pageNumber));
+            page = messageService.findMessageByDialogIsFalseAndAuthorOrderByDateDesc(user, request(pageNumber), currentUser);
             messages = page.getContent();
         }
         List<Branch> branches = branchRepo.findBranchByDialogIsFalse();
+        notifyUser(model, currentUser);
 
         model.addAttribute("user", currentUser);
         model.addAttribute("userChannel", user);
@@ -113,7 +121,7 @@ public class MessageController extends AbstractController {
             }
 
             message.setUpdates(new Date());
-            messageRepo.save(message);
+            messageService.save(message);
             List<Branch> branches = branchRepo.findBranchByDialogIsFalse();
             log.info(currentUser.getUsername() + " -> /user-messages/" + user + " and successfully updated the message");
 
@@ -127,7 +135,9 @@ public class MessageController extends AbstractController {
     public String answer(
             @PathVariable Message messageToAnswer,
             @PathVariable String userName,
-            Model model){
+            Model model,
+            RedirectAttributes redirectAttributes,
+            @RequestHeader String referer){
 
         if (messageToAnswer.isDialog() && !messageToAnswer
                                                     .getBranch()
@@ -137,8 +147,11 @@ public class MessageController extends AbstractController {
             return "redirect:/main";
         }
 
+        UriComponents components = getUriComponents(redirectAttributes, referer);
+
         String answerTo = messageToAnswer.getAuthorName() + " said: " + messageToAnswer.getText();
         model.addAttribute("answerTo", answerTo);
+        model.addAttribute("path", components.getPath());
 
         return "answer";
     }
@@ -152,7 +165,8 @@ public class MessageController extends AbstractController {
             @Valid Message message,
             BindingResult bindingResult,
             Model model,
-            @RequestParam("file") MultipartFile file) throws IOException {
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("path") String path) throws IOException {
 
         message.setAnswerMessage(messageToAnswer);
         message.setAuthor(currentUser);
@@ -160,6 +174,27 @@ public class MessageController extends AbstractController {
         message.setDialog(messageToAnswer.isDialog());
         saveMessage(currentUser, message, bindingResult, model, file);
 
-        return "redirect:/main";
+        return "redirect:" + path;
     }
+
+    @GetMapping("/{message}/like")
+    public String like(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Message message,
+            RedirectAttributes redirectAttributes,
+            @RequestHeader(required = false) String referer
+    ){
+        Set<User> likes = message.getLikes();
+        if(likes.contains(currentUser)){
+            likes.remove(currentUser);
+        }
+        else {
+            likes.add(currentUser);
+        }
+
+        UriComponents components = getUriComponents(redirectAttributes, referer);
+
+        return "redirect:" + components.getPath();
+    }
+
 }

@@ -1,7 +1,7 @@
 <#assign page = nnls(current!1)/>
 <#assign sum = nnls(total!1)/>
 <#if (sum > 1) >
-<nav aria-label="Page navigation" style="padding-bottom: 90px">
+<nav aria-label="Page navigation">
     <ul class="pagination pagination-sm justify-content-center">
 
 

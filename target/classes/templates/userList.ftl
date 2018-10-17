@@ -2,8 +2,8 @@
 <#include "parts/security.ftl">
 
 <@c.page>
-<h4>Users</h4>
-<table class="table mt-2" style="width: 700px">
+<h4>Users<#if isOnline??> online</#if></h4>
+<table class="table mt-2" style="width: 50%">
     <thead>
     <tr>
         <th scope="col">Name</th>
@@ -27,7 +27,7 @@
         </td>
         <td><i>
             <small>
-            <#if user.online><i style="color: green">online</i>
+            <#if user.online><i><a href="/user/online" style="color: green">online</a></i>
             <#elseif user.lastVisit??>Last visit: ${user.lastVisit?string('dd.MM.yyyy HH:mm:ss')}
                 <#else><i style="color: red">offline</i>
             </#if></small>

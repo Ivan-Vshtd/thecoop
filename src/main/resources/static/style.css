@@ -2,8 +2,7 @@
 html,
 body {
     height: 90%;
-
-    background: url("/static/images/logopnglight.png") repeat-y fixed;
+    background: url("/static/images/logopnglight.png") fixed;
     background-position-x: right;
 }
 .wrapper {
@@ -28,4 +27,18 @@ body {
     width: 100%;
     height: 60px;
     background-color: #FFCC99;
+}
+
+.far, .fas {
+    font-size: 150%;
+    color: chocolate;
+}
+
+.msg {
+    color: dimgray;
+    font-size: 100%;
+}
+.add {
+    color: dimgray;
+    font-size: 250%;
 }

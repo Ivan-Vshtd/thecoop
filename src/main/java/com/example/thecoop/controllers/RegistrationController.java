@@ -1,6 +1,7 @@
 package com.example.thecoop.controllers;
 
 import com.example.thecoop.domain.User;
+import com.example.thecoop.domain.UsersInfo;
 import com.example.thecoop.domain.dto.CaptchaResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 import static com.example.thecoop.controllers.ControllerUtils.getErrors;
@@ -72,6 +74,11 @@ public class RegistrationController extends AbstractController{
             log.warn("registration was unsuccessful");
             return "registration";
         }
+
+        UsersInfo defInfo = new UsersInfo();
+        defInfo.setBirthday(new Date(0));
+        defInfo.setUser(user);
+        user.setInfo(defInfo);
 
         if(!userService.addUser(user)){
             model.addAttribute("usernameError", "Such user already exist!");

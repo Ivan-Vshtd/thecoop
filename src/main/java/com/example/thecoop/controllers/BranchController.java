@@ -13,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -35,12 +37,15 @@ public class BranchController extends AbstractController {
     BranchService branchService;
 
     @GetMapping
-    public String branches(Model model) {
+    public String branches(@AuthenticationPrincipal User user,
+                           Model model) {
 
         List<Branch> branches = branchRepo.findBranchByDialogIsFalse();
 
+        notifyUser(model, user);
         model.addAttribute("branches", branches);
-        log.info(" -> branches");
+        model.addAttribute("user", user);
+        log.info(user.getUsername() + " -> branches");
 
         return "branches";
     }
@@ -92,11 +97,13 @@ public class BranchController extends AbstractController {
 
     @GetMapping("edit/{branch}")
     public String editBranch(
+            @AuthenticationPrincipal User user,
             @PathVariable Branch branch,
             Model model) {
 
         model.addAttribute("branch", branch);
-        log.info(" -> branchEdit");
+        model.addAttribute("user", user);
+        log.info(user.getUsername() + " -> branchEdit");
 
         return "branchEdit";
     }
@@ -110,9 +117,10 @@ public class BranchController extends AbstractController {
         Branch branch = branchRepo.findByNameAndDialogIsFalse(branchName);
 
         List<Message> messages;
-        Page<Message> page = messageRepo.findAllByBranchIdOrderByDateDesc(branch.getId(), request(number));
+        Page<Message> page = messageService.findAllByBranchIdOrderByDateDesc(branch.getId(), request(number), user);
         messages = page.getContent();
 
+        notifyUser(model, user);
         model.addAttribute("user", user);
         model.addAttribute("messages", messages);
         model.addAttribute("total", page.getTotalPages());
@@ -132,14 +140,16 @@ public class BranchController extends AbstractController {
             @Valid Message message,
             BindingResult bindingResult,
             Model model,
-            @RequestParam("file") MultipartFile file)
+            @RequestParam("file") MultipartFile file,
+            RedirectAttributes redirectAttributes,
+            @RequestHeader(required = false) String referer)
             throws IOException {
 
         Branch branch = branchService.addMessageToBranch(branchName, user, message);
         saveMessage(user, message, bindingResult, model, file);
 
         List<Message> messages;
-        Page<Message> page = messageRepo.findAllByBranchIdOrderByDateDesc(branch.getId(), request(number));
+        Page<Message> page = messageService.findAllByBranchIdOrderByDateDesc(branch.getId(), request(number), user);
         messages = page.getContent();
 
         model.addAttribute("messages", messages);
@@ -147,9 +157,8 @@ public class BranchController extends AbstractController {
         model.addAttribute("onLineUsers", onlineUsers);
         log.info(user.getUsername() + " -> branch and successfully added message to branch");
 
-        if (bindingResult.hasErrors()){
-            return "branch";
-        }
-        return "redirect:/branches/" + branchName + "/" + number;
+        UriComponents components = getUriComponents(redirectAttributes, referer);
+
+        return "redirect:" + components.getPath();
     }
 }

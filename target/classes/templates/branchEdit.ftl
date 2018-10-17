@@ -2,7 +2,7 @@
 <#include "parts/security.ftl">
 <@c.page>
 
-<h5>Edit inf of: ${branch.name}</h5>
+<h5>Edit info of: ${branch.name}</h5>
 
     <#include "parts/branchEdit.ftl" />
 </@c.page>

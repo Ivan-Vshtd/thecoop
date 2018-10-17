@@ -7,6 +7,7 @@
           <cite title="Source Title">${answerTo}</cite>
       </footer>
     </div>
+
     </#if>
     <#include "parts/messageEdit.ftl" />
 </@c.page>

@@ -6,15 +6,7 @@
     <#if !private??>
 <h5>What would you like to write? Let's get it started in the best topic!</h5>
     </#if>
-<table class="table table-striped mb-5 mt-3" style="max-width: 40rem">
-    <thead>
-    <tr>
-        <th scope="col" width="150"></th>
-        <th scope="col" width="170"></th>
-        <th scope="col" width="150"></th>
-        <th scope="col" width="200"></th>
-    </tr>
-    </thead>
+<table class="table table-striped mb-5 mt-3" style="width: 80em">
     <tbody style="color: grey">
     <#list branches as branch>
 
