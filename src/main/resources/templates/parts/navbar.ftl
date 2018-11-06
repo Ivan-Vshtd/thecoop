@@ -13,20 +13,17 @@
                 <a class="nav-link" href="/">Home</a>
             </li>
             <#if user??>
-            <li class="nav-item">
-                <a class="nav-link" href="/user">Users</a>
-            </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/main">Activity</a>
                 </li>
             <li class="nav-item">
                 <a class="nav-link" href="/branches">Topics</a>
             </li>
+             <li class="nav-item">
+                 <a class="nav-link" href="/user">Users</a>
+             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/user-messages/${currentUserId}/1">My messages</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/user/profile/${currentUserId}">Profile</a>
+                <a class="nav-link" href="/user-profile/${currentUserId}/1">Profile</a>
             </li>
             </#if>
         </ul>

@@ -47,14 +47,14 @@ public class MessageController extends AbstractController {
         deleteFile(message);
 
         log.info(currentUser.getUsername() +
-                " -> /user-messages/" + currentUser.getId() + " and successfully deleted the message");
+                " -> /user-profile/" + currentUser.getId() + " and successfully deleted the message");
 
         UriComponents components = getUriComponents(redirectAttributes, referer);
 
         return "redirect:" + components.getPath();
     }
 
-    @GetMapping("/user-messages/{user}/{pageNumber}")
+    @GetMapping("/user-profile/{user}/{pageNumber}")
     public String userMessages(
             @AuthenticationPrincipal User currentUser,
             @PathVariable User user,
@@ -87,12 +87,12 @@ public class MessageController extends AbstractController {
         model.addAttribute("total", page.getTotalPages());
         model.addAttribute("branches", branches);
         model.addAttribute("onLineUsers", onlineUsers);
-        log.info(currentUser.getUsername() + " -> user-messages/" + user.getId() + "/" + pageNumber);
+        log.info(currentUser.getUsername() + " -> user-profile/" + user.getId() + "/" + pageNumber);
 
-        return "userMessages";
+        return "Profile";
     }
 
-    @PostMapping("/user-messages/{user}/{pageNumber}")
+    @PostMapping("/user-profile/{user}/{pageNumber}")
     public String updateMessage(
             @AuthenticationPrincipal User currentUser,
             @PathVariable int pageNumber,
@@ -123,11 +123,11 @@ public class MessageController extends AbstractController {
             message.setUpdates(new Date());
             messageService.save(message);
             List<Branch> branches = branchRepo.findBranchByDialogIsFalse();
-            log.info(currentUser.getUsername() + " -> /user-messages/" + user + " and successfully updated the message");
+            log.info(currentUser.getUsername() + " -> /user-profile/" + user + " and successfully updated the message");
 
             model.addAttribute("branches", branches);
         }
-        return "redirect:/user-messages/" + user + "/" + pageNumber;
+        return "redirect:/user-profile/" + user + "/" + pageNumber;
     }
 
     @GetMapping("/answer/{userName}/{messageToAnswer}")

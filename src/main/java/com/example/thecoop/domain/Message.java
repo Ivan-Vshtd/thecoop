@@ -69,6 +69,7 @@ public class Message {
 
     private String filename;
 
+    @Column(updatable = false)
     private Date date = new Date();
 
     private Date updates;

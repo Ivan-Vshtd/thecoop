@@ -13,7 +13,7 @@
                          style="width: 80px; height: 80px center" alt="avatar"/>
                 </div>
                 <p class="card-text" style="margin-bottom:8px; line-height: 17px;">
-                    <a href="/user-messages/${message.author.id}/1"
+                    <a href="/user-profile/${message.author.id}/1"
                        <#if message.author.admin>style="color: blueviolet" </#if>>${message.authorName}
                     </a><br/>
                     <#if message.author.info??>
@@ -86,7 +86,7 @@
                 <i class="far fa-comment"></i>
             </a>
             <#if message.author.id == currentUserId && !message.deleted>
-            <a href="/user-messages/${message.author.id}/1?message=${message.id}">
+            <a href="/user-profile/${message.author.id}/1?message=${message.id}">
                 <i class="fas fa-pencil-alt"></i>
             </a>
             <a href="/message-erase=${message.id}">

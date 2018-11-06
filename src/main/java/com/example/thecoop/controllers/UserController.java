@@ -60,7 +60,7 @@ public class UserController extends AbstractController{
         model.addAttribute("info", user.getInfo());
         log.info(user.getUsername() + " -> user/profile");
 
-        return "profile";
+        return "editProfile";
     }
 
     @PostMapping("profile/{userId}")
@@ -88,9 +88,9 @@ public class UserController extends AbstractController{
             @AuthenticationPrincipal User currentUser){
 
         userService.subscribe(currentUser, user);
-        log.info(user.getUsername() + " -> /user/user-messages/" + user.getId());
+        log.info(user.getUsername() + " -> /user/user-profile/" + user.getId());
 
-        return "redirect:/user-messages/" + user.getId() + "/1";
+        return "redirect:/user-profile/" + user.getId() + "/1";
     }
 
     @GetMapping("unsubscribe/{user}")
@@ -99,9 +99,9 @@ public class UserController extends AbstractController{
             @AuthenticationPrincipal User currentUser){
 
         userService.unsubscribe(currentUser, user);
-        log.info(user.getUsername() + " -> /user/user-messages/" + user.getId());
+        log.info(user.getUsername() + " -> /user/user-profile/" + user.getId());
 
-        return "redirect:/user-messages/" + user.getId() + "/1";
+        return "redirect:/user-profile/" + user.getId() + "/1";
     }
 
     @GetMapping("{type}/{user}/list")

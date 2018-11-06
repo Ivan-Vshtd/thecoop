@@ -3,7 +3,7 @@
     <i class="far fa-comments add"></i>
 </a>
 </#if>
-<div class="collapse <#if message?? || answerTo??>show</#if>" id="collapsePart">
+<div class="collapse <#if message?? || answerTo??>show</#if>" id="collapsePart" style="width: 90%">
     <div class="form-group mt-3 col-sm-5">
         <form method="post" enctype="multipart/form-data">
             <div class="form-group">
@@ -27,7 +27,7 @@
             <div class="form-group">
                 <div class="custom-file">
                     <input type="file" name="file" id="customFile"/>
-                    <label class="custom-file-label" for="customFile">Choose file</label>
+                    <label class="custom-file-label" for="customFile">Add image</label>
                 </div>
             </div>
              <#if message?? && !message.dialog>

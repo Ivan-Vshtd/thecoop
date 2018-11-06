@@ -45,6 +45,8 @@ public class MainController extends AbstractController {
     public String logout(@AuthenticationPrincipal User user){
         List<SessionInformation> userSessions = sessionRegistry.getAllSessions(user, false);
         userSessions.forEach(SessionInformation::expireNow);
+        log.info(user.getUsername() + " -> logout and sucessfully logged out!");
+
         return "logout";
     }
 

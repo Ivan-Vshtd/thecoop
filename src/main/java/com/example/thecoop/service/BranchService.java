@@ -40,6 +40,8 @@ public class BranchService {
         if (branch.isDialog()) {
             message.setDialog(true);
         }
+        log.debug(message.getId() + " has been successfully added to branch");
+
         return branch;
     }
 
@@ -52,6 +54,7 @@ public class BranchService {
                 branch.setDescription(description);
             }
             branchRepo.save(branch);
+            log.debug(branch.getName() + " has been successfully changed");
         }
     }
 }

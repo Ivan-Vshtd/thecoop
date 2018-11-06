@@ -62,10 +62,10 @@ public class AdminController extends AbstractController {
         List<Message> relatedMessages = messageService.findAllByAnswerMessage(message); // find all messages which were answer to this one
         relatedMessages.forEach(relMessage -> relMessage.setAnswerMessage(messageService.getOne(1L))); // set answer message with id 1 ('deleted')
         messageService.deleteById(message.getId());
-        log.info(currentUser.getUsername() + " -> /user-messages/" + currentUser.getId()
-                + " and successfully deleted the message from db");
 
         UriComponents components = getUriComponents(redirectAttributes, referer);
+        log.info(currentUser.getUsername() + " -> /user-profile/" + currentUser.getId()
+                + " and successfully deleted the message from db");
 
         return "redirect:" + components.getPath();
     }

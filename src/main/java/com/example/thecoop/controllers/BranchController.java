@@ -90,7 +90,7 @@ public class BranchController extends AbstractController {
             @RequestParam("description") String description) {
 
         branchService.editBranch(branch, currentUser, name, description);
-        log.info(currentUser.getUsername() + " -> /branches/ and successfully updated name of the branch");
+        log.info(currentUser.getUsername() + " -> /branches/ and successfully updated the branch");
 
         return "redirect:/branches";
     }

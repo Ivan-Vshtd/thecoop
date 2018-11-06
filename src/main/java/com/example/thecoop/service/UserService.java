@@ -43,7 +43,7 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found!");
         }
-        log.info(username + " has been found in db");
+        log.debug(username + " has been found in db");
         return user;
     }
 
@@ -56,7 +56,7 @@ public class UserService implements UserDetailsService {
             user.setActivationCode(UUID.randomUUID().toString());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
-            log.info(user.getUsername() + " has been successfully added to db");
+            log.debug(user.getUsername() + " has been successfully added to db");
 
             sendMessage(user);
         }
@@ -149,7 +149,7 @@ public class UserService implements UserDetailsService {
         if (isEmailChanged) {
             sendMessage(user);
         }
-        log.info(user.getUsername() + " has been successfully updated in db");
+        log.debug(user.getUsername() + " has been successfully updated in db");
     }
 
     public void subscribe(User currentUser, User user) {

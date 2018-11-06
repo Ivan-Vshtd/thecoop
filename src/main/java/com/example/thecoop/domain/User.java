@@ -62,6 +62,7 @@ public class User implements UserDetails {
 
     private String avatarFilename;
 
+    @Column(updatable = false)
     private Date date = new Date();
 
     private Date lastVisit;

@@ -19,6 +19,7 @@
     <div class="container mt-4 ml-5" style="max-width: 95%">
         <#if notification??>
     <div class="alert alert-success" role="alert">
+        <i class="far fa-bell" style="color: green"></i>
         ${notification}
     </div>
     </#if>

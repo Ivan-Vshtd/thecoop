@@ -9,7 +9,7 @@
     <tbody>
     <#list users as user>
     <tr>
-        <td><a href="/user-messages/${user.id}/1">${user.getUsername()}</a>
+        <td><a href="/user-profile/${user.id}/1">${user.getUsername()}</a>
 
     </tr>
     </#list>

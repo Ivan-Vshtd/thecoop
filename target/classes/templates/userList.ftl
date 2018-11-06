@@ -20,7 +20,7 @@
         <td>
             <img src="<#if user.avatarFilename??>/avatar/${user.avatarFilename}<#else>/static/images/logopng.png</#if>"
                  style="max-width: 45px; max-height: 45px;"/><br/>
-            <a href="/user-messages/${user.id}/1 " <#if user.admin>style="color: blueviolet" <#else>style="color: dimgray"</#if>>${user.username}</a>
+            <a href="/user-profile/${user.id}/1 " <#if user.admin>style="color: blueviolet" <#else>style="color: dimgray"</#if>>${user.username}</a>
         </td>
         <td>
             <small><i><#list user.roles as role>${role}<#sep>, </#list></i></small>
