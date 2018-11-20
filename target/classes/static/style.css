@@ -42,3 +42,8 @@ body {
     color: dimgray;
     font-size: 250%;
 }
+
+.turbolinks-progress-bar {
+    height: 3px;
+    background-color: chocolate;
+}

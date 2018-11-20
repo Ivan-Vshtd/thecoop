@@ -109,7 +109,7 @@ public class Message {
     }
 
     public String getAnswer() {
-        return String.format("%s said: at %s <br/>\"%s\"",
+        return String.format("%s said branch and get private conversation: at %s <br/>\"%s\"",
                 getAnswerMessage().getAuthorName(),
                 getAnswerMessage().getDate(),
                 getAnswerMessage().getText());

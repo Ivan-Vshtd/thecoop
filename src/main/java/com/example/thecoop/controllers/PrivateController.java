@@ -100,7 +100,7 @@ public class PrivateController extends AbstractController {
         model.addAttribute("total", page.getTotalPages());
         model.addAttribute("current", number);
         model.addAttribute("onLineUsers", onlineUsers);
-        log.info(userOne.getUsername() + " -> branch and get private conversation");
+        log.info(currentUser.getUsername() + " -> branch and get private conversation");
 
         return "branch";
     }
